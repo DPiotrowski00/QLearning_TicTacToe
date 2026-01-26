@@ -38,7 +38,28 @@ namespace TicTacToeSolver
     { 
         private readonly Random random = new();
         private readonly Dictionary<string, int> qMap = [];
-        private List<Move> _moves = [];
+        private readonly List<Move> _moves = [];
+
+        private double epsilon = 1.0d;
+        private double epsilonMin = 0.01d;
+        private double epsilonDecay = 0.99995d;
+
+        public void DecayEpsilon()
+        {
+            epsilon = Math.Max(epsilonMin, epsilon * epsilonDecay);
+        }
+
+        public void MakeAMove(ref Board board)
+        {
+            if (Random.Shared.NextDouble() < epsilon)
+            {
+                MakeARandomMove(ref board);
+            }
+            else
+            {
+                MakeAnEducatedMove(ref board);
+            }
+        }
 
         public void MakeARandomMove(ref Board board)
         {
@@ -81,15 +102,20 @@ namespace TicTacToeSolver
             codeStart += board.EncodeBoard();
             codeStart += "_";
 
-            var jeden = qMap.Where(q => q.Key.StartsWith(codeStart));
-            var dwa = jeden.OrderByDescending(q => q.Value);
-            var trzy = dwa.First();
-            var bestMoveCode = trzy.Key;
-            //var bestMoveCode = qMap.Where(q => q.Key.StartsWith(codeStart)).OrderByDescending(q => q.Value).First().Key;
+            var buffer = qMap.Where(q => q.Key.StartsWith(codeStart)).OrderByDescending(q => q.Value);
+            if (buffer.Any())
+            {
+                var bestMoveCode = buffer.First().Key;
 
-            var bestMove = bestMoveCode.Substring(bestMoveCode.Length - 2);
-            int[] move = [Int32.Parse(bestMove[0].ToString()), Int32.Parse(bestMove[1].ToString())];
-            board.TryPlacingMarker(this.Marker, move);
+                var bestMove = bestMoveCode[^2..];
+                int[] move = [Int32.Parse(bestMove[0].ToString()), Int32.Parse(bestMove[1].ToString())];
+                board.TryPlacingMarker(this.Marker, move);
+            }
+            else
+            {
+                MakeARandomMove(ref board);
+            }
+            
         }
 
         public void ApplyRewards(int value)

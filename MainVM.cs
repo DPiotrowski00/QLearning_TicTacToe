@@ -34,7 +34,7 @@ namespace TicTacToeSolver
                 {
                     foreach (var player in Players)
                     {
-                        player.MakeARandomMove(ref Board);
+                        player.MakeAMove(ref Board);
                         if (Board.CheckForGameEnd(out winner))
                         {
                             GameLoop = false;
@@ -63,6 +63,11 @@ namespace TicTacToeSolver
                     {
                         l.ApplyRewards(-2);
                     }
+                }
+
+                foreach(var p in Players)
+                {
+                    p.DecayEpsilon();
                 }
             }
             Debug.WriteLine($"Successfully trained {TrainingDepth} times.");
