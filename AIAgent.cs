@@ -50,13 +50,9 @@ namespace TicTacToeSolver
 
                 if (board.TryPlacingMarker(this.Marker, position))
                 {
-                    if (qMap.TryGetValue(move.code, out _))
+                    if (!qMap.TryGetValue(move.code, out _))
                     {
-                        qMap[move.code] += 1;
-                    }
-                    else
-                    {
-                        qMap.Add(move.code, 1);
+                        qMap.Add(move.code, 0);
                     }
 
                     _moves.Add(move);
@@ -64,14 +60,6 @@ namespace TicTacToeSolver
                 }
                 else
                 {
-                    if (qMap.TryGetValue(move.code, out _))
-                    {
-                        qMap[move.code] -= 1;
-                    }
-                    else
-                    {
-                        qMap.Add(move.code, -1);
-                    }
                     continue;
                 }
             }
@@ -93,31 +81,22 @@ namespace TicTacToeSolver
             codeStart += board.EncodeBoard();
             codeStart += "_";
 
-            var bestMoveCode = qMap.Where(q => q.Key.StartsWith(codeStart)).OrderByDescending(q => q.Value).First().Key;
+            var jeden = qMap.Where(q => q.Key.StartsWith(codeStart));
+            var dwa = jeden.OrderByDescending(q => q.Value);
+            var trzy = dwa.First();
+            var bestMoveCode = trzy.Key;
+            //var bestMoveCode = qMap.Where(q => q.Key.StartsWith(codeStart)).OrderByDescending(q => q.Value).First().Key;
 
             var bestMove = bestMoveCode.Substring(bestMoveCode.Length - 2);
-            int[] move = new int[2];
-            move[0] = Int32.Parse(bestMove[0].ToString());
-            move[1] = Int32.Parse(bestMove[1].ToString());
-
+            int[] move = [Int32.Parse(bestMove[0].ToString()), Int32.Parse(bestMove[1].ToString())];
             board.TryPlacingMarker(this.Marker, move);
         }
 
-        public void ApplyRewards(bool LeadToWin)
+        public void ApplyRewards(int value)
         {
-            if (LeadToWin)
+            foreach (var m in _moves)
             {
-                foreach (var m in _moves)
-                {
-                    qMap[m.code] += 1;
-                }
-            }
-            else
-            {
-                foreach (var m in _moves)
-                {
-                    qMap[m.code] -= 1;
-                }
+                qMap[m.code] += value;
             }
 
             _moves.Clear();

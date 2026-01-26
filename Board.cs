@@ -81,7 +81,7 @@ namespace TicTacToeSolver
 
             for (int i = 0; i < boardSize; i++)
             {
-                BoardStates marker = _board[i, 0];
+                BoardStates marker = _board[0, i];
                 if (marker == BoardStates.Null) continue;
                 for (int j = 0; j < boardSize; j++)
                 {

@@ -11,7 +11,7 @@ namespace TicTacToeSolver
         private readonly ObservableCollection<AIAgent> Players;
 
         [ObservableProperty]
-        private int trainingDepth = 0;
+        private int trainingDepth = 1000;
 
         public MainVM()
         {
@@ -43,16 +43,26 @@ namespace TicTacToeSolver
                     }
                 }
 
-                var winners = Players.Where(p => p.Marker == winner);
-                var losers = Players.Where(p => p.Marker != winner);
-
-                foreach (var w in winners)
+                if (winner == BoardStates.Null)
                 {
-                    w.ApplyRewards(true);
+                    foreach (var p in Players)
+                    {
+                        p.ApplyRewards(1);
+                    }
                 }
-                foreach (var l in losers)
+                else
                 {
-                    l.ApplyRewards(false);
+                    var winners = Players.Where(p => p.Marker == winner);
+                    var losers = Players.Where(p => p.Marker != winner);
+
+                    foreach (var w in winners)
+                    {
+                        w.ApplyRewards(2);
+                    }
+                    foreach (var l in losers)
+                    {
+                        l.ApplyRewards(-2);
+                    }
                 }
             }
             Debug.WriteLine($"Successfully trained {TrainingDepth} times.");
@@ -79,6 +89,19 @@ namespace TicTacToeSolver
             }
 
             Board.WriteToConsole();
+            
+            switch (winner)
+            {
+                case BoardStates.X:
+                    Debug.WriteLine($"X WON!");
+                    break;
+                case BoardStates.O:
+                    Debug.WriteLine($"O WON!");
+                    break;
+                case BoardStates.Null:
+                    Debug.WriteLine($"NOBODY WON!");
+                    break;
+            }
 
             //var winners = Players.Where(p => p.Marker == winner);
             //var losers = Players.Where(p => p.Marker != winner);
