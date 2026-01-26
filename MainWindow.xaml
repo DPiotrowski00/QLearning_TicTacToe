@@ -28,6 +28,20 @@
             <Button Content="Play" Width="200" Command="{Binding PlayCommand}"/>
             <Button Content="Play Educated" Width="200" Command="{Binding PlayWhatWasLearnedCommand}"/>
         </StackPanel>
-        <DataGrid Grid.Row="1" ItemsSource="{Binding Board}" AutoGenerateColumns="True"/>
+        <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Button Grid.Column=""
+            </Grid>
+        </Border>
     </Grid>
 </Window>

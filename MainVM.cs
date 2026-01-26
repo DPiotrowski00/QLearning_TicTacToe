@@ -20,8 +20,8 @@ namespace TicTacToeSolver
         {
             Players ??= [];
             Players.Clear();
-            Players.Add(new AIAgent("Player 1", BoardStates.X));
-            Players.Add(new AIAgent("Player 2", BoardStates.O));
+            Players.Add(new AIAgent("Player 1", 1));
+            Players.Add(new AIAgent("Player 2", -1));
         }
 
         [RelayCommand]
@@ -29,8 +29,8 @@ namespace TicTacToeSolver
         {
             for (int i = 0; i < TrainingDepth; i++)
             {
-                Board.Clear();
-                BoardStates? winner = BoardStates.Null;
+                this.Board.Clear();
+                int winner = 0;
                 bool GameLoop = true;
 
                 while (GameLoop)
@@ -46,7 +46,7 @@ namespace TicTacToeSolver
                     }
                 }
 
-                if (winner == BoardStates.Null)
+                if (winner == 0)
                 {
                     foreach (var p in Players)
                     {
@@ -81,7 +81,7 @@ namespace TicTacToeSolver
         private void PlayWhatWasLearned()
         {
             Board.Clear();
-            BoardStates? winner = BoardStates.Null;
+            int winner = 0;
             bool GameLoop = true;
 
             while (GameLoop)
@@ -101,13 +101,13 @@ namespace TicTacToeSolver
             
             switch (winner)
             {
-                case BoardStates.X:
+                case 1:
                     Debug.WriteLine($"X WON!");
                     break;
-                case BoardStates.O:
+                case -1:
                     Debug.WriteLine($"O WON!");
                     break;
-                case BoardStates.Null:
+                case 0:
                     Debug.WriteLine($"NOBODY WON!");
                     break;
             }

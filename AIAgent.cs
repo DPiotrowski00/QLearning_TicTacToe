@@ -13,20 +13,9 @@ namespace TicTacToeSolver
     {
         public string code = "";
 
-        public Move(BoardStates marker, string board, int[] position)
+        public Move(int marker, string board, int[] position)
         {
-            switch (marker)
-            {
-                case BoardStates.X:
-                    code += "X";
-                    break;
-                case BoardStates.O:
-                    code += "O";
-                    break;
-            }
-            code += "_";
-            code += board;
-            code += "_";
+            code += marker + "_" + board + "_" + position[0] + position[1];
             foreach (var p in position)
             {
                 code += p;
@@ -34,15 +23,15 @@ namespace TicTacToeSolver
         }
     }
 
-    public class AIAgent(string name, BoardStates marker) : Player(name, marker)
+    public class AIAgent(string name, int marker) : Player(name, marker)
     { 
         private readonly Random random = new();
         private readonly Dictionary<string, double> qMap = [];
         private readonly List<Move> _moves = [];
 
         private double epsilon = 1.0d;
-        private double epsilonMin = 0.01d;
-        private double epsilonDecay = 0.99995d;
+        private readonly double epsilonMin = 0.01d;
+        private readonly double epsilonDecay = 0.99995d;
 
         public void DecayEpsilon()
         {
@@ -88,19 +77,7 @@ namespace TicTacToeSolver
 
         public void MakeAnEducatedMove(ref Board board)
         {
-            string codeStart = "";
-            switch (this.Marker)
-            {
-                case BoardStates.X:
-                    codeStart += "X";
-                    break;
-                case BoardStates.O:
-                    codeStart += "O";
-                    break;
-            }
-            codeStart += "_";
-            codeStart += board.EncodeBoard();
-            codeStart += "_";
+            string codeStart = this.Marker + "_" + board.EncodeBoard() + "_";
 
             var buffer = qMap.Where(q => q.Key.StartsWith(codeStart));
             if (buffer.Any())
