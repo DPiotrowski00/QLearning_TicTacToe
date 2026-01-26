@@ -13,6 +13,9 @@ namespace TicTacToeSolver
         [ObservableProperty]
         private int trainingDepth = 1000;
 
+        [ObservableProperty]
+        private int timesTrained = 0;
+
         public MainVM()
         {
             Players ??= [];
@@ -47,7 +50,7 @@ namespace TicTacToeSolver
                 {
                     foreach (var p in Players)
                     {
-                        p.ApplyRewards(1);
+                        p.ApplyRewards(0.5);
                     }
                 }
                 else
@@ -57,11 +60,11 @@ namespace TicTacToeSolver
 
                     foreach (var w in winners)
                     {
-                        w.ApplyRewards(2);
+                        w.ApplyRewards(1.0d);
                     }
                     foreach (var l in losers)
                     {
-                        l.ApplyRewards(-2);
+                        l.ApplyRewards(-1.0d);
                     }
                 }
 
@@ -71,6 +74,7 @@ namespace TicTacToeSolver
                 }
             }
             Debug.WriteLine($"Successfully trained {TrainingDepth} times.");
+            TimesTrained += TrainingDepth;
         }
 
         [RelayCommand]
@@ -107,18 +111,6 @@ namespace TicTacToeSolver
                     Debug.WriteLine($"NOBODY WON!");
                     break;
             }
-
-            //var winners = Players.Where(p => p.Marker == winner);
-            //var losers = Players.Where(p => p.Marker != winner);
-
-            //foreach (var w in winners)
-            //{
-            //    w.ApplyRewards(true);
-            //}
-            //foreach (var l in losers)
-            //{
-            //    l.ApplyRewards(false);
-            //}
         }
     }
 }

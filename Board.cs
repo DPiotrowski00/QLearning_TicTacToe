@@ -152,12 +152,12 @@ namespace TicTacToeSolver
             {
                 if (value == BoardStates.Null)
                 {
-                    WinningMarker = null;
+                    WinningMarker = BoardStates.Null;
                     return false;
                 }
             }
 
-            WinningMarker = null;
+            WinningMarker = BoardStates.Null;
             return true;
         }
 

@@ -15,6 +15,15 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Label>
+                <Label.Content>
+                    <TextBlock>
+                        <Run Text="Trained "/>
+                        <Run Text="{Binding TimesTrained}"/>
+                        <Run Text=" times"/>
+                    </TextBlock>
+                </Label.Content>
+            </Label>
             <TextBox Width="400" Text="{Binding TrainingDepth}" />
             <Button Content="Play" Width="200" Command="{Binding PlayCommand}"/>
             <Button Content="Play Educated" Width="200" Command="{Binding PlayWhatWasLearnedCommand}"/>

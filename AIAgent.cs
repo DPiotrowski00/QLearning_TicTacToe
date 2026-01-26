@@ -37,7 +37,7 @@ namespace TicTacToeSolver
     public class AIAgent(string name, BoardStates marker) : Player(name, marker)
     { 
         private readonly Random random = new();
-        private readonly Dictionary<string, int> qMap = [];
+        private readonly Dictionary<string, double> qMap = [];
         private readonly List<Move> _moves = [];
 
         private double epsilon = 1.0d;
@@ -102,10 +102,10 @@ namespace TicTacToeSolver
             codeStart += board.EncodeBoard();
             codeStart += "_";
 
-            var buffer = qMap.Where(q => q.Key.StartsWith(codeStart)).OrderByDescending(q => q.Value);
+            var buffer = qMap.Where(q => q.Key.StartsWith(codeStart));
             if (buffer.Any())
             {
-                var bestMoveCode = buffer.First().Key;
+                var bestMoveCode = buffer.MaxBy(m => m.Value).Key;
 
                 var bestMove = bestMoveCode[^2..];
                 int[] move = [Int32.Parse(bestMove[0].ToString()), Int32.Parse(bestMove[1].ToString())];
@@ -115,14 +115,15 @@ namespace TicTacToeSolver
             {
                 MakeARandomMove(ref board);
             }
-            
         }
 
-        public void ApplyRewards(int value)
+        public void ApplyRewards(double value)
         {
-            foreach (var m in _moves)
+            for (int i = 0; i < _moves.Count; i++)
             {
-                qMap[m.code] += value;
+                double weight = (double)(i + 1) / _moves.Count;
+                qMap[_moves[i].code] += (int)(value * weight);
+                qMap[_moves[i].code] = Math.Clamp(qMap[_moves[i].code], -10, 10);
             }
 
             _moves.Clear();
