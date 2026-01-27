@@ -51,7 +51,7 @@ namespace TicTacToeSolver
 
                 int[] position = [row, col];
 
-                Move move = new(this.Marker, board.EncodeBoard(), position);
+                Move move = new(this.Marker, board.EncodeThisBoard(), position);
 
                 if (board.TryPlacingMarker(this.Marker, position))
                 {
@@ -72,7 +72,7 @@ namespace TicTacToeSolver
 
         public void MakeAnEducatedMove(ref Board board, out int row, out int col)
         {
-            string codeStart = this.Marker + "_" + board.EncodeBoard() + "_";
+            string codeStart = this.Marker + "_" + board.EncodeThisBoard() + "_";
             
             var buffer = qMap.Where(q => q.Key.StartsWith(codeStart));
             if (buffer.Any())

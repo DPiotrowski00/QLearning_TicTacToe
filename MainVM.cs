@@ -32,13 +32,15 @@ namespace TicTacToeSolver
 
         private void OnCellClicked(BoardButton cell)
         {
-            if (UserBoard.TryPlacingMarker(1, new int[] { cell.Row, cell.Column }))
+            if (UserBoard.TryPlacingMarker(1, [cell.Row, cell.Column]))
             {
                 cell.Content = "X";
                 if (!UserBoard.CheckForGameEnd(out int winner))
                 {
                     Players.Where(p => p.Marker == -1).First().MakeAnEducatedMove(ref UserBoard, out int row, out int col);
                     Cells.Where(b => b.Row == row && b.Column == col).First().Content = "O";
+
+                    Debug.WriteLine(UserBoard.PossibleTransformations());
                 }
             }
         }

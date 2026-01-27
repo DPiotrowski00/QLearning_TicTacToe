@@ -14,7 +14,45 @@ namespace TicTacToeSolver
             Clear();
         }
 
-        public string EncodeBoard()
+        public List<int[,]> PossibleTransformations()
+        {
+            List<int[,]> result = [];
+            result.Add(_board);
+            
+            int[,] transform = new int[boardSize, boardSize];
+            for (int i = 0; i < boardSize; i++)
+            {
+                for (int j = 0; j < boardSize; j++)
+                {
+                    transform[i, j] = _board[j, i];
+                }
+            }
+            result.Add(transform);
+
+            transform = new int[boardSize, boardSize];
+            for (int i = 0; i < boardSize; i++)
+            {
+                for (int j = 0; j < boardSize; j++)
+                {
+                    transform[i, j] = _board[boardSize - i - 1, boardSize - j - 1];
+                }
+            }
+            result.Add(transform);
+
+            transform = new int[boardSize, boardSize];
+            for (int i = 0; i < boardSize; i++)
+            {
+                for (int j = 0; j < boardSize; j++)
+                {
+                    transform[i, j] = _board[boardSize - j - 1, boardSize - i - 1];
+                }
+            }
+            result.Add(transform);
+
+            return result;
+        }
+
+        public string EncodeThisBoard()
         {
             string result = "";
             for (int i = 0; i < boardSize; i++)
@@ -22,6 +60,21 @@ namespace TicTacToeSolver
                 for (int j = 0; j < boardSize; j++)
                 {
                     result += _board[i, j];
+                }
+                result += "-";
+            }
+            return result;
+        }
+
+        public static string EncodeCustomBoard(int[,] board)
+        {
+            string result = "";
+            int size = (int)Math.Sqrt(board.Length);
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    result += board[i, j];
                 }
                 result += "-";
             }
