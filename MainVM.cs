@@ -146,9 +146,11 @@ namespace TicTacToeSolver
             }
         }
 
+        [RelayCommand]
         private void DrawBoard()
         {
             Cells.Clear();
+            UserBoard.Clear();
 
             for (int i = 0; i < BoardSize; i++)
             {

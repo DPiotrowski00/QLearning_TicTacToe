@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TicTacToeSolver"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" SizeToContent="WidthAndHeight">
     <Window.DataContext>
         <local:MainVM/>
     </Window.DataContext>
@@ -13,9 +13,10 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Slider Value="{Binding BoardSize}" Minimum="2" Maximum="10" Width="300"/>
+            <Slider Value="{Binding BoardSize}" Minimum="3" Maximum="10" Width="300"/>
             <Label>
                 <Label.Content>
                     <TextBlock>
@@ -49,5 +50,6 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        <Button Grid.Row="2" Content="Clear board" Command="{Binding DrawBoardCommand}"/>
     </Grid>
 </Window>
