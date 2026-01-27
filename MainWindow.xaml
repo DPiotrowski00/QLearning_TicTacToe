@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TicTacToeSolver"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" SizeToContent="WidthAndHeight">
     <Window.DataContext>
         <local:MainVM/>
     </Window.DataContext>
@@ -13,8 +13,10 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Slider Value="{Binding BoardSize}" Minimum="3" Maximum="10" Width="300"/>
             <Label>
                 <Label.Content>
                     <TextBlock>
@@ -28,20 +30,26 @@
             <Button Content="Play" Width="200" Command="{Binding PlayCommand}"/>
             <Button Content="Play Educated" Width="200" Command="{Binding PlayWhatWasLearnedCommand}"/>
         </StackPanel>
-        <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Button Grid.Column=""
-            </Grid>
-        </Border>
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding Cells}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="{Binding BoardSize}"
+                         Columns="{Binding BoardSize}" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button
+                Content="{Binding Content}"
+                Command="{Binding Command}"
+                CommandParameter="{Binding}"
+                Width="60"
+                Height="60"
+                FontSize="24"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Button Grid.Row="2" Content="Clear board" Command="{Binding DrawBoardCommand}"/>
     </Grid>
 </Window>

@@ -2,22 +2,57 @@
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Windows.Controls;
 
 namespace TicTacToeSolver
 {
     public partial class MainVM : ObservableObject
     {
-        private Board Board = new(3);
-        private readonly ObservableCollection<AIAgent> Players;
+        private Board Board;
+        private Board UserBoard;
+        private readonly List<AIAgent> Players;
+
+        public RelayCommand<BoardButton> CellCommand { get; }
 
         [ObservableProperty]
-        private int trainingDepth = 1000;
+        private ObservableCollection<BoardButton> cells = [];
 
+        [ObservableProperty]
+        private int boardSize = 3;
+        [ObservableProperty]
+        private int trainingDepth = 1000;
         [ObservableProperty]
         private int timesTrained = 0;
 
+        partial void OnBoardSizeChanged(int oldValue, int newValue)
+        {
+            UserBoard = new(newValue);
+            DrawBoard();
+        }
+
+        private void OnCellClicked(BoardButton cell)
+        {
+            if (UserBoard.TryPlacingMarker(1, [cell.Row, cell.Column]))
+            {
+                cell.Content = "X";
+                if (!UserBoard.CheckForGameEnd(out int winner))
+                {
+                    Players.Where(p => p.Marker == -1).First().MakeAnEducatedMove(ref UserBoard, out int row, out int col);
+                    Cells.Where(b => b.Row == row && b.Column == col).First().Content = "O";
+
+                    Debug.WriteLine(UserBoard.PossibleTransformations());
+                }
+            }
+        }
+
         public MainVM()
         {
+            Board = new(boardSize);
+            UserBoard = new(boardSize);
+
+            CellCommand = new RelayCommand<BoardButton>(OnCellClicked);
+            DrawBoard();
+            
             Players ??= [];
             Players.Clear();
             Players.Add(new AIAgent("Player 1", 1));
@@ -29,7 +64,7 @@ namespace TicTacToeSolver
         {
             for (int i = 0; i < TrainingDepth; i++)
             {
-                this.Board.Clear();
+                Board.Clear();
                 int winner = 0;
                 bool GameLoop = true;
 
@@ -37,7 +72,7 @@ namespace TicTacToeSolver
                 {
                     foreach (var player in Players)
                     {
-                        player.MakeAMove(ref Board);
+                        player.MakeAMove(ref Board, out _, out _);
                         if (Board.CheckForGameEnd(out winner))
                         {
                             GameLoop = false;
@@ -88,7 +123,7 @@ namespace TicTacToeSolver
             {
                 foreach (var player in Players)
                 {
-                    player.MakeAnEducatedMove(ref Board);
+                    player.MakeAnEducatedMove(ref Board, out _, out _);
                     if (Board.CheckForGameEnd(out winner))
                     {
                         GameLoop = false;
@@ -110,6 +145,21 @@ namespace TicTacToeSolver
                 case 0:
                     Debug.WriteLine($"NOBODY WON!");
                     break;
+            }
+        }
+
+        [RelayCommand]
+        private void DrawBoard()
+        {
+            Cells.Clear();
+            UserBoard.Clear();
+
+            for (int i = 0; i < BoardSize; i++)
+            {
+                for (int j = 0; j < BoardSize; j++)
+                {
+                    Cells.Add(new BoardButton(i, j, CellCommand));
+                }
             }
         }
     }

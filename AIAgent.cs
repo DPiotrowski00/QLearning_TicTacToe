@@ -9,18 +9,9 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TicTacToeSolver
 {
-    public class Move
+    public class Move(int marker, string board, int[] position)
     {
-        public string code = "";
-
-        public Move(int marker, string board, int[] position)
-        {
-            code += marker + "_" + board + "_" + position[0] + position[1];
-            foreach (var p in position)
-            {
-                code += p;
-            }
-        }
+        public string code = marker + "_" + board + "_" + position[0] + position[1];
     }
 
     public class AIAgent(string name, int marker) : Player(name, marker)
@@ -30,33 +21,37 @@ namespace TicTacToeSolver
         private readonly List<Move> _moves = [];
 
         private double epsilon = 1.0d;
-        private readonly double epsilonMin = 0.01d;
-        private readonly double epsilonDecay = 0.99995d;
+        private double epsilonMin = 0.01d;
+        private double epsilonDecay = 0.99995d;
 
         public void DecayEpsilon()
         {
             epsilon = Math.Max(epsilonMin, epsilon * epsilonDecay);
         }
 
-        public void MakeAMove(ref Board board)
+        public void MakeAMove(ref Board board, out int row, out int col)
         {
             if (Random.Shared.NextDouble() < epsilon)
             {
-                MakeARandomMove(ref board);
+                MakeARandomMove(ref board, out row, out col);
             }
             else
             {
-                MakeAnEducatedMove(ref board);
+                MakeAnEducatedMove(ref board, out row, out col);
             }
         }
 
-        public void MakeARandomMove(ref Board board)
-        {
+        public void MakeARandomMove(ref Board board, out int row, out int col)
+        {            
             while (true)
             {
-                int[] position = [(int)random.NextInt64(0, board.GetSize()), (int)random.NextInt64(0, board.GetSize())];
+                row = (int)random.NextInt64(0, board.GetSize());
+                col = (int)random.NextInt64(0, board.GetSize());
 
-                Move move = new(this.Marker, board.EncodeBoard(), position);
+
+                int[] position = [row, col];
+
+                Move move = new(this.Marker, board.EncodeThisBoard(), position);
 
                 if (board.TryPlacingMarker(this.Marker, position))
                 {
@@ -75,10 +70,10 @@ namespace TicTacToeSolver
             }
         }
 
-        public void MakeAnEducatedMove(ref Board board)
+        public void MakeAnEducatedMove(ref Board board, out int row, out int col)
         {
-            string codeStart = this.Marker + "_" + board.EncodeBoard() + "_";
-
+            string codeStart = this.Marker + "_" + board.EncodeThisBoard() + "_";
+            
             var buffer = qMap.Where(q => q.Key.StartsWith(codeStart));
             if (buffer.Any())
             {
@@ -87,10 +82,12 @@ namespace TicTacToeSolver
                 var bestMove = bestMoveCode[^2..];
                 int[] move = [Int32.Parse(bestMove[0].ToString()), Int32.Parse(bestMove[1].ToString())];
                 board.TryPlacingMarker(this.Marker, move);
+                row = move[0];
+                col = move[1];
             }
             else
             {
-                MakeARandomMove(ref board);
+                MakeARandomMove(ref board, out row, out col);
             }
         }
 
