@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace TicTacToeSolver
 {
-    public class Player(string name, BoardStates marker)
+    public class Player(string name, int marker)
     {
         public string Name { get; set; } = name;
-        public BoardStates Marker { get; set; } = marker;
+        public int Marker { get; set; } = marker;
     }
 }

@@ -4,13 +4,13 @@ namespace TicTacToeSolver
 {
     public class Board
     {
-        private BoardStates[,] _board;
+        private int[,] _board;
         private readonly int boardSize = 0;
 
         public Board(int boardSize)
         {
             this.boardSize = boardSize;
-            _board = new BoardStates[boardSize, boardSize];
+            _board = new int[boardSize, boardSize];
             Clear();
         }
 
@@ -21,19 +21,7 @@ namespace TicTacToeSolver
             {
                 for (int j = 0; j < boardSize; j++)
                 {
-                    var state = _board[i, j];
-                    switch (state)
-                    {
-                        case BoardStates.X:
-                            result += "X";
-                            break;
-                        case BoardStates.O:
-                            result += "O";
-                            break;
-                        case BoardStates.Null:
-                            result += "N";
-                            break;
-                    }
+                    result += _board[i, j];
                 }
                 result += "-";
             }
@@ -46,7 +34,7 @@ namespace TicTacToeSolver
             {
                 for (int j = 0; j < boardSize; j++)
                 {
-                    _board[i, j] = BoardStates.Null;
+                    _board[i, j] = 0;
                 }
             }
         }
@@ -56,12 +44,12 @@ namespace TicTacToeSolver
             return boardSize;
         }
 
-        public bool CheckForGameEnd(out BoardStates? WinningMarker)
+        public bool CheckForGameEnd(out int WinningMarker)
         {
             for (int i = 0; i < boardSize; i++)
             {
-                BoardStates marker = _board[i, 0];
-                if (marker == BoardStates.Null) continue;
+                int marker = _board[i, 0];
+                if (marker == 0) continue;
                 for (int j = 0; j < boardSize; j++)
                 {
                     if (_board[i, j] == marker)
@@ -81,8 +69,8 @@ namespace TicTacToeSolver
 
             for (int i = 0; i < boardSize; i++)
             {
-                BoardStates marker = _board[0, i];
-                if (marker == BoardStates.Null) continue;
+                int marker = _board[0, i];
+                if (marker == 0) continue;
                 for (int j = 0; j < boardSize; j++)
                 {
                     if (_board[j, i] == marker)
@@ -102,10 +90,10 @@ namespace TicTacToeSolver
             {
                 int i = 0;
                 int j = 0;
-                BoardStates marker = _board[i, j];
+                int marker = _board[i, j];
                 while (i < boardSize && j < boardSize)
                 {
-                    if (marker == BoardStates.Null) break;
+                    if (marker == 0) break;
                     if (_board[i, j] == marker)
                     {
                         if (i == boardSize - 1 && j == boardSize - 1)
@@ -126,10 +114,10 @@ namespace TicTacToeSolver
             {
                 int i = boardSize - 1;
                 int j = boardSize - 1;
-                BoardStates marker = _board[i, j];
+                int marker = _board[i, j];
                 while (i >= 0 && j >= 0)
                 {
-                    if (marker == BoardStates.Null) break;
+                    if (marker == 0) break;
                     if (_board[i, j] == marker)
                     {
                         if (i == 0 && j == 0)
@@ -150,21 +138,21 @@ namespace TicTacToeSolver
 
             foreach (var value in _board)
             {
-                if (value == BoardStates.Null)
+                if (value == 0)
                 {
-                    WinningMarker = BoardStates.Null;
+                    WinningMarker = 0;
                     return false;
                 }
             }
 
-            WinningMarker = BoardStates.Null;
+            WinningMarker = 0;
             return true;
         }
 
-        public bool TryPlacingMarker(BoardStates marker, int[] position)
+        public bool TryPlacingMarker(int marker, int[] position)
         {
             if (position.Length == 0) return false;
-            if (_board[position[0], position[1]] == BoardStates.Null && marker != BoardStates.Null)
+            if (_board[position[0], position[1]] == 0 && marker != 0)
             {
                 _board[position[0], position[1]] = marker;
                 return true;

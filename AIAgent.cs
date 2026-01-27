@@ -9,32 +9,12 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TicTacToeSolver
 {
-    public class Move
+    public class Move(int marker, string board, int[] position)
     {
-        public string code = "";
-
-        public Move(BoardStates marker, string board, int[] position)
-        {
-            switch (marker)
-            {
-                case BoardStates.X:
-                    code += "X";
-                    break;
-                case BoardStates.O:
-                    code += "O";
-                    break;
-            }
-            code += "_";
-            code += board;
-            code += "_";
-            foreach (var p in position)
-            {
-                code += p;
-            }
-        }
+        public string code = marker + "_" + board + "_" + position[0] + position[1];
     }
 
-    public class AIAgent(string name, BoardStates marker) : Player(name, marker)
+    public class AIAgent(string name, int marker) : Player(name, marker)
     { 
         private readonly Random random = new();
         private readonly Dictionary<string, double> qMap = [];
@@ -49,23 +29,27 @@ namespace TicTacToeSolver
             epsilon = Math.Max(epsilonMin, epsilon * epsilonDecay);
         }
 
-        public void MakeAMove(ref Board board)
+        public void MakeAMove(ref Board board, out int row, out int col)
         {
             if (Random.Shared.NextDouble() < epsilon)
             {
-                MakeARandomMove(ref board);
+                MakeARandomMove(ref board, out row, out col);
             }
             else
             {
-                MakeAnEducatedMove(ref board);
+                MakeAnEducatedMove(ref board, out row, out col);
             }
         }
 
-        public void MakeARandomMove(ref Board board)
-        {
+        public void MakeARandomMove(ref Board board, out int row, out int col)
+        {            
             while (true)
             {
-                int[] position = [(int)random.NextInt64(0, board.GetSize()), (int)random.NextInt64(0, board.GetSize())];
+                row = (int)random.NextInt64(0, board.GetSize());
+                col = (int)random.NextInt64(0, board.GetSize());
+
+
+                int[] position = [row, col];
 
                 Move move = new(this.Marker, board.EncodeBoard(), position);
 
@@ -86,22 +70,10 @@ namespace TicTacToeSolver
             }
         }
 
-        public void MakeAnEducatedMove(ref Board board)
+        public void MakeAnEducatedMove(ref Board board, out int row, out int col)
         {
-            string codeStart = "";
-            switch (this.Marker)
-            {
-                case BoardStates.X:
-                    codeStart += "X";
-                    break;
-                case BoardStates.O:
-                    codeStart += "O";
-                    break;
-            }
-            codeStart += "_";
-            codeStart += board.EncodeBoard();
-            codeStart += "_";
-
+            string codeStart = this.Marker + "_" + board.EncodeBoard() + "_";
+            
             var buffer = qMap.Where(q => q.Key.StartsWith(codeStart));
             if (buffer.Any())
             {
@@ -110,10 +82,12 @@ namespace TicTacToeSolver
                 var bestMove = bestMoveCode[^2..];
                 int[] move = [Int32.Parse(bestMove[0].ToString()), Int32.Parse(bestMove[1].ToString())];
                 board.TryPlacingMarker(this.Marker, move);
+                row = move[0];
+                col = move[1];
             }
             else
             {
-                MakeARandomMove(ref board);
+                MakeARandomMove(ref board, out row, out col);
             }
         }
 
