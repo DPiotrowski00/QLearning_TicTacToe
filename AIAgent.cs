@@ -17,7 +17,7 @@ namespace TicTacToeSolver
     public class AIAgent(string name, int marker) : Player(name, marker)
     { 
         private readonly Random random = new();
-        private readonly Dictionary<string, double> qMap = [];
+        private readonly Dictionary<string, Dictionary<string, int>> qMap = [];
         private readonly List<Move> _moves = [];
 
         private double epsilon = 1.0d;

@@ -59,12 +59,12 @@ namespace TicTacToeSolver
             for (int i = 0; i < TrainingDepth; i++)
             {
                 Board.Clear();
-                int winner = 0;
                 bool GameLoop = true;
 
                 while (GameLoop)
                 {
                     qAgentX.MakeAMove(ref Board, out _, out _);
+                    int winner;
                     if (Board.CheckForGameEnd(out winner))
                     {
                         GameLoop = false;
