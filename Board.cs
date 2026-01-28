@@ -165,10 +165,10 @@ namespace TicTacToeSolver
                 }
             }
             {
-                int i = boardSize - 1;
+                int i = 0;
                 int j = boardSize - 1;
                 int marker = _board[i, j];
-                while (i >= 0 && j >= 0)
+                while (i < boardSize && j >= 0)
                 {
                     if (marker == 0) break;
                     if (_board[i, j] == marker)
@@ -184,7 +184,7 @@ namespace TicTacToeSolver
                         break;
                     }
 
-                    i--;
+                    i++;
                     j--;
                 }
             }

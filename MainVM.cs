@@ -10,7 +10,8 @@ namespace TicTacToeSolver
     {
         private Board Board;
         private Board UserBoard;
-        private readonly List<AIAgent> Players;
+        private readonly QAgent qAgentX = new("Agent X", 1);
+        private readonly QAgent qAgentO = new("Agent Y", -1);
 
         public RelayCommand<BoardButton> CellCommand { get; }
 
@@ -37,10 +38,8 @@ namespace TicTacToeSolver
                 cell.Content = "X";
                 if (!UserBoard.CheckForGameEnd(out int winner))
                 {
-                    Players.Where(p => p.Marker == -1).First().MakeAnEducatedMove(ref UserBoard, out int row, out int col);
+                    qAgentX.MakeAnEducatedMove(ref UserBoard, out int row, out int col);
                     Cells.Where(b => b.Row == row && b.Column == col).First().Content = "O";
-
-                    Debug.WriteLine(UserBoard.PossibleTransformations());
                 }
             }
         }
@@ -52,11 +51,6 @@ namespace TicTacToeSolver
 
             CellCommand = new RelayCommand<BoardButton>(OnCellClicked);
             DrawBoard();
-            
-            Players ??= [];
-            Players.Clear();
-            Players.Add(new AIAgent("Player 1", 1));
-            Players.Add(new AIAgent("Player 2", -1));
         }
 
         [RelayCommand]
@@ -70,43 +64,22 @@ namespace TicTacToeSolver
 
                 while (GameLoop)
                 {
-                    foreach (var player in Players)
+                    qAgentX.MakeAMove(ref Board, out _, out _);
+                    if (Board.CheckForGameEnd(out winner))
                     {
-                        player.MakeAMove(ref Board, out _, out _);
-                        if (Board.CheckForGameEnd(out winner))
-                        {
-                            GameLoop = false;
-                            break;
-                        }
+                        GameLoop = false;
+                        break;
+                    }
+                    qAgentO.MakeAMove(ref Board, out _, out _);
+                    if (Board.CheckForGameEnd(out winner))
+                    {
+                        GameLoop = false;
+                        break;
                     }
                 }
 
-                if (winner == 0)
-                {
-                    foreach (var p in Players)
-                    {
-                        p.ApplyRewards(0.5);
-                    }
-                }
-                else
-                {
-                    var winners = Players.Where(p => p.Marker == winner);
-                    var losers = Players.Where(p => p.Marker != winner);
-
-                    foreach (var w in winners)
-                    {
-                        w.ApplyRewards(1.0d);
-                    }
-                    foreach (var l in losers)
-                    {
-                        l.ApplyRewards(-1.0d);
-                    }
-                }
-
-                foreach(var p in Players)
-                {
-                    p.DecayEpsilon();
-                }
+                qAgentX.DecayEpsilon();
+                qAgentO.DecayEpsilon();
             }
             Debug.WriteLine($"Successfully trained {TrainingDepth} times.");
             TimesTrained += TrainingDepth;
@@ -121,9 +94,15 @@ namespace TicTacToeSolver
 
             while (GameLoop)
             {
-                foreach (var player in Players)
+                foreach (var marker in new[] { 1, -1 })
                 {
-                    player.MakeAnEducatedMove(ref Board, out _, out _);
+                    qAgentX.MakeAnEducatedMove(ref Board, out _, out _);
+                    if (Board.CheckForGameEnd(out winner))
+                    {
+                        GameLoop = false;
+                        break;
+                    }
+                    qAgentO.MakeAnEducatedMove(ref Board, out _, out _);
                     if (Board.CheckForGameEnd(out winner))
                     {
                         GameLoop = false;
